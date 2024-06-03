@@ -1,0 +1,24 @@
+services:
+  app:
+    container_name: swe-agent-server
+    image: swe-agent-server:latest
+    build: .
+    restart: always
+    command: "bash start_web_ui.sh"
+    volumes:
+      - ./keys.cfg:/app/keys.cfg:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+  caddy:
+    container_name: caddy
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy_data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    healthcheck:
+      interval: 30s
+      timeout: 3s
+      test: ["CMD", "wget", "--spider", "0.0.0.0:2019/metrics"]

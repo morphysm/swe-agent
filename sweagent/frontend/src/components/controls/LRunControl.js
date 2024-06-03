@@ -268,10 +268,10 @@ function LRunControl({
               <input
                 type="text"
                 className="form-control"
-                placeholder="gpt4"
+                placeholder="gpt4o"
                 onChange={(e) =>
                   setRunConfig((draft) => {
-                    draft.agent.model.model_name = e.target.value || "gpt4";
+                    draft.agent.model.model_name = e.target.value || "gpt4o";
                   })
                 }
               />

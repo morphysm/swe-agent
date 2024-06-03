@@ -19,7 +19,7 @@ function Run() {
   const runConfigDefault = {
     agent: {
       model: {
-        model_name: "gpt4",
+        model_name: "gpt4o",
       },
     },
     environment: {
@@ -27,7 +27,7 @@ function Run() {
       repo_path: "",
       base_commit: "",
       environment_setup: {
-        input_type: "manual",
+        input_type: "script_path",
         manual: {
           python: "3.10",
           config_type: "manual",

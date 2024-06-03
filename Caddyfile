@@ -1,0 +1,15 @@
+# Global config
+{
+    http_port 80
+    https_port 443
+    email andrew@cyberfame.io
+
+    admin 0.0.0.0:2019
+}
+
+swe-test.cyberfame.io {
+    basic_auth {
+        user $2a$14$I862r/Lc0mY.ZV7RPlmf3uVKUJ1p4LoYAFoDJkSYZ8SCkas2U3n1a
+    }
+    reverse_proxy swe-agent-server:3000
+}
