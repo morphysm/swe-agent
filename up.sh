@@ -2,5 +2,5 @@
 # Build docker image.
 ./setup.sh
 
-docker-compose up -d --build
+docker compose up -d --build
 

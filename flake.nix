@@ -37,7 +37,6 @@
             # Installing our custom python with pre-installed packages.
             pythonCustom
             pkgs.docker
-            pkgs.docker-compose
             pkgs.magic-wormhole
           ];
           # Upon installation we need to do additional configurations.
