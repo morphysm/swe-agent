@@ -11,5 +11,7 @@ swe-test.cyberfame.io {
     basic_auth {
         user $2a$14$.nJK3WR9lC0T988kI2nhduTVNp9YEps5o.yGQJTZQfPm8KEaXxVPa
     }
-    reverse_proxy swe-agent-server:3000
+    reverse_proxy swe-agent-server:3000 {
+        header_up HOST "localhost:3000"
+    }
 }
