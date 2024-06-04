@@ -22,3 +22,6 @@ services:
       interval: 30s
       timeout: 3s
       test: ["CMD", "wget", "--spider", "0.0.0.0:2019/metrics"]
+
+volumes:
+  caddy_data:
