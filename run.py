@@ -50,6 +50,10 @@ from sweagent.environment.utils import (
     get_gh_issue_data,
     parse_gh_issue_url,
 )
+from langsmith import traceable
+
+os.environ["LANGSMITH_TRACING_V2"] = 'true'
+os.environ["LANGCHAIN_PROJECT"] = 'sweagent'
 
 __doc__: str = """ Run inference. Usage examples:
 
@@ -326,6 +330,7 @@ class Main:
         hook.on_init(args=self.args, agent=self.agent, env=self.env, traj_dir=self.traj_dir)
         self.hooks.append(hook)
 
+    @traceable
     def run(self, index):
         # Reset environment
         instance_id = self.env.data[index]["instance_id"]
