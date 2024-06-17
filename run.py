@@ -50,9 +50,9 @@ from sweagent.environment.utils import (
     get_gh_issue_data,
     parse_gh_issue_url,
 )
-from langsmith import traceable
+from langsmith.run_trees import RunTree
 
-os.environ["LANGSMITH_TRACING_V2"] = 'true'
+os.environ["LANGSMITH_TRACING"] = 'true'
 os.environ["LANGCHAIN_PROJECT"] = 'sweagent'
 
 __doc__: str = """ Run inference. Usage examples:
@@ -330,7 +330,6 @@ class Main:
         hook.on_init(args=self.args, agent=self.agent, env=self.env, traj_dir=self.traj_dir)
         self.hooks.append(hook)
 
-    @traceable
     def run(self, index):
         # Reset environment
         instance_id = self.env.data[index]["instance_id"]
@@ -363,6 +362,16 @@ class Main:
             tests = "\n".join([f"- {x}" for x in self.env.record["FAIL_TO_PASS"]])
 
         setup_args = {"issue": issue, "files": files, "test_files": test_files, "tests": tests}
+        
+        # langsmith integration
+        pipeline = RunTree(
+            name="sweagent",
+            run_type="chain",
+            inputs={
+                "query": issue,
+            }
+        )
+
         info, trajectory = self.agent.run(
             setup_args=setup_args,
             env=self.env,
@@ -370,6 +379,27 @@ class Main:
             traj_dir=self.traj_dir,
             return_type="info_trajectory",
         )
+
+        pipeline.add_metadata({"total_cost": info["model_stats"].get("total_cost")})
+        for thought in trajectory:
+            child_run = pipeline.create_child(
+                name="Thought",
+                inputs={
+                    "thought": thought
+                }
+            )
+            child_run.end(outputs={
+                "thought": thought
+            })
+            child_run.post()
+
+        # End the RunTree
+        pipeline.end(outputs={
+            "exit_status": info.get("exit_status"),
+            "submission": info.get("submission", "No Submission made")
+        })
+        pipeline.post()
+
         self._save_predictions(instance_id, info)
         for hook in self.hooks:
             hook.on_instance_completed(info=info, trajectory=trajectory)
